@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import OTPPage from "./pages/OTPPage";
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
+import ProfilePage from "./pages/ProfilePage";
 import { useAuth } from "./hooks/useAuth";
 
 function App() {
@@ -28,6 +29,17 @@ function App() {
           element={
             isAuthenticated ? (
               <ProductsPage />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            isAuthenticated ? (
+              <ProfilePage />
             ) : (
               <Navigate to="/" />
             )

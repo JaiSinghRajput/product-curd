@@ -53,6 +53,8 @@ class APIClient {
       },
     };
 
+    const isFormData = config.isFormData || config.body instanceof FormData;
+
     // Attach access token for protected endpoints
     const accessToken = this.getAccessToken();
     if (accessToken) {
@@ -60,7 +62,7 @@ class APIClient {
     }
 
     // For FormData, set appropriate headers
-    if (config.isFormData) {
+    if (isFormData) {
       delete config.headers['Content-Type'];
       delete config.isFormData;
     }
@@ -121,7 +123,7 @@ class APIClient {
     return this.request(endpoint, {
       ...options,
       method: 'POST',
-      body: options.isFormData ? body : JSON.stringify(body),
+      body: options.isFormData || body instanceof FormData ? body : JSON.stringify(body),
     });
   }
 
@@ -132,7 +134,7 @@ class APIClient {
     return this.request(endpoint, {
       ...options,
       method: 'PUT',
-      body: options.isFormData ? body : JSON.stringify(body),
+      body: options.isFormData || body instanceof FormData ? body : JSON.stringify(body),
     });
   }
 
@@ -143,7 +145,7 @@ class APIClient {
     return this.request(endpoint, {
       ...options,
       method: 'PATCH',
-      body: JSON.stringify(body),
+      body: options.isFormData || body instanceof FormData ? body : JSON.stringify(body),
     });
   }
 

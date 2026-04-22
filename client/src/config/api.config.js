@@ -1,6 +1,6 @@
 // API Configuration
 const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || '/api',
   TIMEOUT: 10000, // 10 seconds
   HEADERS: {
     'Content-Type': 'application/json',
@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
     SEND_OTP: '/auth/send-otp',
     VERIFY_OTP: '/auth/verify-otp',
     REFRESH_TOKEN: '/auth/refresh-token',
+    PROFILE: '/auth/profile',
     LOGOUT: '/auth/logout',
   },
 

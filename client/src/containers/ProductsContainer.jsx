@@ -52,10 +52,10 @@ const ProductsContainer = ({ showTabs = false }) => {
   // 🔑 KEY DIFFERENCE
   const visibleProducts = showTabs
     ? products.filter(
-        (p) =>
-          p.status ===
-          (isPublished ? "published" : "unpublished")
-      )
+      (p) =>
+        p.status ===
+        (isPublished ? "published" : "unpublished")
+    )
     : products; // Products page = show all
 
   // CRUD
@@ -101,12 +101,14 @@ const ProductsContainer = ({ showTabs = false }) => {
       <div className="flex justify-between mb-4">
         <h1 className="text-lg font-semibold">Products</h1>
 
-        <button
-          onClick={() => setShowAdd(true)}
-          className="text-blue-600"
-        >
-          + Add Products
-        </button>
+        {!showTabs && (
+          <button
+            onClick={() => setShowAdd(true)}
+            className="text-blue-600"
+          >
+            + Add Products
+          </button>
+        )}
       </div>
 
       {/* Tabs ONLY for Home */}
@@ -120,8 +122,12 @@ const ProductsContainer = ({ showTabs = false }) => {
       {/* Content */}
       {visibleProducts.length === 0 ? (
         <EmptyState
-          title="No Products"
-          subtitle="Create your first product"
+          title={showTabs ? "No Published Products" : "No Products Yet"}
+          subtitle={showTabs
+            ? "Your Published Products will appear here\nCreate your first product to publish"
+            : "You have not created any products yet\nStart by adding your first product"}
+          actionLabel={!showTabs ? "+ Add Product" : undefined}
+          onAction={!showTabs ? () => setShowAdd(true) : undefined}
         />
       ) : (
         <ProductGrid

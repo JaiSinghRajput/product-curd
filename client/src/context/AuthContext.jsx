@@ -5,10 +5,41 @@ import { API_ENDPOINTS } from '../config/api.config.js';
 
 export const AuthContext = createContext();
 
+const normalizeProfileImageUrl = (profileImage) => {
+  if (!profileImage) {
+    return null;
+  }
+
+  const proxyPath = '/api/media/proxy?url=';
+
+  if (profileImage.includes(proxyPath)) {
+    const proxyIndex = profileImage.indexOf(proxyPath);
+    return profileImage.slice(proxyIndex);
+  }
+
+  if (profileImage.includes('res.cloudinary.com')) {
+    return `${proxyPath}${encodeURIComponent(profileImage)}`;
+  }
+
+  return profileImage;
+};
+
+const normalizeUser = (userData) => {
+  if (!userData) {
+    return userData;
+  }
+
+  return {
+    ...userData,
+    profileImage: normalizeProfileImageUrl(userData.profileImage),
+  };
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isProfileUpdating, setIsProfileUpdating] = useState(false);
   const [error, setError] = useState(null);
   const [otpSent, setOtpSent] = useState(false);
   const [otpContact, setOtpContact] = useState(null);
@@ -19,8 +50,24 @@ export const AuthProvider = ({ children }) => {
     if (auth) {
       try {
         const authData = JSON.parse(auth);
-        setUser(authData.user);
+        setUser(normalizeUser(authData.user));
         setIsAuthenticated(true);
+
+        apiClient.get(API_ENDPOINTS.AUTH.PROFILE)
+          .then((response) => {
+            const refreshedUser = normalizeUser(response.data);
+            setUser(refreshedUser);
+
+            const storedAuth = localStorage.getItem('auth');
+            if (storedAuth) {
+              const parsed = JSON.parse(storedAuth);
+              parsed.user = refreshedUser;
+              localStorage.setItem('auth', JSON.stringify(parsed));
+            }
+          })
+          .catch((err) => {
+            console.error('Failed to refresh profile state:', err);
+          });
       } catch (err) {
         console.error('Error restoring auth state:', err);
         localStorage.removeItem('auth');
@@ -73,22 +120,23 @@ export const AuthProvider = ({ children }) => {
       );
 
       const { user: userData, tokens } = response.data;
+      const normalizedUser = normalizeUser(userData);
 
       // Store auth data
       apiClient.setAuth({
-        user: userData,
+        user: normalizedUser,
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       });
 
-      setUser(userData);
+      setUser(normalizedUser);
       setIsAuthenticated(true);
       setOtpSent(false);
       setOtpContact(null);
 
       return {
         success: true,
-        user: userData,
+        user: normalizedUser,
       };
     } catch (err) {
       const errorMessage = err.message || 'Failed to verify OTP';
@@ -100,6 +148,56 @@ export const AuthProvider = ({ children }) => {
       };
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  const updateProfile = useCallback(async ({ name, profileImageFile, removeProfileImage = false }) => {
+    setIsProfileUpdating(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+
+      if (name !== undefined) {
+        formData.append('name', name);
+      }
+
+      if (profileImageFile) {
+        formData.append('profileImage', profileImageFile);
+      }
+
+      if (removeProfileImage) {
+        formData.append('removeProfileImage', 'true');
+      }
+
+      const response = await apiClient.patch(API_ENDPOINTS.AUTH.PROFILE, formData, {
+        isFormData: true,
+      });
+
+      const updatedUser = normalizeUser(response.data);
+      setUser(updatedUser);
+
+      const authData = localStorage.getItem('auth');
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        parsed.user = updatedUser;
+        localStorage.setItem('auth', JSON.stringify(parsed));
+      }
+
+      return {
+        success: true,
+        user: updatedUser,
+      };
+    } catch (err) {
+      const errorMessage = err.message || 'Failed to update profile';
+      setError(errorMessage);
+      return {
+        success: false,
+        error: errorMessage,
+        details: err.details,
+      };
+    } finally {
+      setIsProfileUpdating(false);
     }
   }, []);
 
@@ -167,6 +265,7 @@ export const AuthProvider = ({ children }) => {
     user,
     isAuthenticated,
     isLoading,
+    isProfileUpdating,
     error,
     otpSent,
     otpContact,
@@ -174,6 +273,7 @@ export const AuthProvider = ({ children }) => {
     // Actions
     sendOTP,
     verifyOTP,
+    updateProfile,
     logout,
     refreshAccessToken,
     clearError,
