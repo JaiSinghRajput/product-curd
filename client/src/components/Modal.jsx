@@ -1,8 +1,17 @@
 // components/Modal.jsx
-const Modal = ({ title, children, onClose, footer }) => {
+const Modal = ({
+  title,
+  children,
+  onClose,
+  footer,
+  bodyScrollable = true,
+  panelClassName = "w-120",
+}) => {
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-      <div className="bg-white w-120 rounded-2xl shadow-lg overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/30 p-4 overflow-y-auto">
+      <div
+        className={`mx-auto my-6 bg-white rounded-2xl shadow-lg overflow-hidden max-w-full ${panelClassName}`}
+      >
         
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b">
@@ -11,7 +20,9 @@ const Modal = ({ title, children, onClose, footer }) => {
         </div>
 
         {/* Body */}
-        <div className="p-6 max-h-[70vh] overflow-y-auto">
+        <div
+          className={`p-6 ${bodyScrollable ? "max-h-[70vh] overflow-y-auto" : ""}`}
+        >
           {children}
         </div>
 

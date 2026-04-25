@@ -64,6 +64,7 @@ PORT=5000
 NODE_ENV=development
 API_BASE_URL=http://localhost:5000
 DB_URL=mongodb+srv://<db_user>:<db_password>@<cluster-host>/<database>?retryWrites=true&w=majority
+DB_NAME=productr
 JWT_SECRET=replace_with_a_strong_secret
 JWT_EXPIRY=3600
 REFRESH_TOKEN_EXPIRY=604800
@@ -78,6 +79,8 @@ CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
+
+If `mongodb+srv://` fails with a DNS SRV error (`querySrv ECONNREFUSED`), use the standard `mongodb://` URI from MongoDB Compass and keep `DB_NAME` set.
 
 3. Run in development
 

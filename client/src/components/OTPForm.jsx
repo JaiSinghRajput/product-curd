@@ -19,7 +19,7 @@ const OTPForm = ({ onSubmit, onResend, isLoading = false }) => {
 
       <p className="text-sm text-gray-600 mb-3">Enter OTP</p>
 
-      <OTPInput otp={otp} setOtp={setOtp} />
+      <OTPInput otp={otp} setOtp={setOtp} onEnter={handleSubmit} />
 
       <button
         onClick={handleSubmit}

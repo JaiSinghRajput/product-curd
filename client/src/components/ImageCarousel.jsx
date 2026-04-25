@@ -16,13 +16,22 @@ const ImageCarousel = ({ images = [] }) => {
 
   if (!images.length) return null;
 
+  const currentImage = images[current];
+  const imageSrc =
+    typeof currentImage === "string"
+      ? currentImage
+      : currentImage?.url || currentImage?.secure_url || "";
+
   return (
     <div className="relative">
       {/* Image */}
-      <div className="bg-gray-100 rounded-xl p-4 flex justify-center items-center h-40">
+      <div className="bg-gray-100 rounded-xl h-44 w-full overflow-hidden">
         <img
-          src={images[current]}
-          className="h-full object-contain"
+          key={imageSrc || current}
+          src={imageSrc}
+          alt="Product"
+          className="h-full w-full object-cover carousel-fade-in"
+          loading="lazy"
         />
       </div>
 
@@ -31,14 +40,14 @@ const ImageCarousel = ({ images = [] }) => {
         <>
           <button
             onClick={prev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow rounded-full px-2"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow rounded-full px-2 transition-all duration-300 hover:scale-105 hover:bg-slate-50"
           >
             ‹
           </button>
 
           <button
             onClick={next}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow rounded-full px-2"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow rounded-full px-2 transition-all duration-300 hover:scale-105 hover:bg-slate-50"
           >
             ›
           </button>
@@ -52,10 +61,10 @@ const ImageCarousel = ({ images = [] }) => {
             <div
               key={i}
               onClick={() => goTo(i)}
-              className={`h-2 w-2 rounded-full cursor-pointer ${
+              className={`h-2 w-2 rounded-full cursor-pointer transition-all duration-300 ${
                 current === i
-                  ? "bg-orange-500"
-                  : "bg-gray-300"
+                  ? "bg-orange-500 scale-110"
+                  : "bg-gray-300 hover:bg-gray-400"
               }`}
             />
           ))}

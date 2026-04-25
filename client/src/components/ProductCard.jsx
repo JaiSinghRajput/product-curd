@@ -11,7 +11,7 @@ const ProductCard = ({
   const images = product.images || [];
 
   return (
-    <div className="bg-white rounded-2xl shadow p-4 w-[320px]">
+    <div className="bg-white rounded-2xl shadow p-4 w-[320px] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <ImageCarousel images={images} />
 
       <h3 className="font-semibold text-sm mt-3">
@@ -31,7 +31,7 @@ const ProductCard = ({
       <div className="flex gap-2">
         <button
           onClick={onToggle}
-          className={`flex-1 py-2 rounded-lg text-white text-sm ${
+          className={`flex-1 py-2 rounded-lg text-white text-sm transition-all duration-300 hover:brightness-95 active:scale-[0.98] ${
             isPublished
               ? "bg-green-500"
               : "bg-blue-600"
@@ -42,14 +42,14 @@ const ProductCard = ({
 
         <button
           onClick={onEdit}
-          className="flex-1 border rounded-lg text-sm"
+          className="flex-1 border rounded-lg text-sm transition-all duration-300 hover:bg-gray-50 active:scale-[0.98]"
         >
           Edit
         </button>
 
         <button
           onClick={onDelete}
-          className="px-3 border rounded-lg"
+          className="px-3 border rounded-lg transition-all duration-300 hover:bg-red-50 active:scale-[0.98]"
         >
           🗑
         </button>

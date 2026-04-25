@@ -4,8 +4,10 @@ import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
   const linkClass = ({ isActive }) =>
-    `flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${
-      isActive ? "text-white font-bold" : "text-slate-200 hover:bg-white/10 hover:text-white"
+    `flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-300 ${
+      isActive
+        ? "text-white font-bold bg-white/10"
+        : "text-slate-200 hover:bg-white/10 hover:text-white hover:translate-x-1"
     }`;
 
   return (

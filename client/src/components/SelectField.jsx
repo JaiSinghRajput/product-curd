@@ -1,7 +1,7 @@
 // components/SelectField.jsx
 import { useState } from "react";
 
-const SelectField = ({ label, options, value, onChange }) => {
+const SelectField = ({ label, options, value, onChange, error }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -12,7 +12,9 @@ const SelectField = ({ label, options, value, onChange }) => {
 
       <div
         onClick={() => setOpen(!open)}
-        className="border rounded-lg px-3 py-2 cursor-pointer bg-white"
+        className={`border rounded-lg px-3 py-2 cursor-pointer bg-white ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
       >
         {value || "Select product type"}
       </div>
@@ -32,6 +34,10 @@ const SelectField = ({ label, options, value, onChange }) => {
             </div>
           ))}
         </div>
+      )}
+
+      {error && (
+        <p className="text-red-500 text-xs mt-1">{error}</p>
       )}
     </div>
   );

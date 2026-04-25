@@ -6,6 +6,7 @@ const env = {
   port: Number(process.env.PORT || 5000),
   nodeEnv: process.env.NODE_ENV || "development",
   dbUrl: process.env.DB_URL,
+  dbName: process.env.DB_NAME || "productr",
   jwtSecret: process.env.JWT_SECRET || "change_this_secret",
   jwtExpiry: Number(process.env.JWT_EXPIRY || 3600),
   refreshTokenExpiry: Number(process.env.REFRESH_TOKEN_EXPIRY || 604800),

@@ -9,16 +9,21 @@ const ProductGrid = ({
   onToggle,
 }) => {
   return (
-    <div className="flex flex-wrap gap-6">
-      {products.map((p) => (
-        <ProductCard
+    <div className="flex flex-wrap gap-6 smooth-rise-in">
+      {products.map((p, index) => (
+        <div
           key={p.id || p._id}
-          product={p}
-          type={type}
-          onEdit={() => onEdit(p)}
-          onDelete={() => onDelete(p)}
-          onToggle={() => onToggle(p)}
-        />
+          className="smooth-rise-in"
+          style={{ animationDelay: `${Math.min(index * 50, 250)}ms` }}
+        >
+          <ProductCard
+            product={p}
+            type={type}
+            onEdit={() => onEdit(p)}
+            onDelete={() => onDelete(p)}
+            onToggle={() => onToggle(p)}
+          />
+        </div>
       ))}
     </div>
   );

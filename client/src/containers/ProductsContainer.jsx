@@ -6,6 +6,7 @@ import EmptyState from "../components/EmptyState";
 import ProductFormModal from "../components/ProductFormModal";
 import DeleteModal from "../components/DeleteModal";
 import Toast from "../components/Toast";
+import ProductGridSkeleton from "../components/ProductGridSkeleton";
 import { useProducts } from "../hooks/useProducts";
 
 const ProductsContainer = ({ showTabs = false }) => {
@@ -65,16 +66,20 @@ const ProductsContainer = ({ showTabs = false }) => {
       setShowAdd(false);
       showToast("Product added successfully");
     }
+    return result;
   };
 
   const handleEdit = async (data) => {
-    if (!editItem) return;
+    if (!editItem) {
+      return { success: false, error: "No product selected for editing" };
+    }
     const id = editItem.id || editItem._id;
     const result = await updateProduct(id, data);
     if (result.success) {
       setEditItem(null);
       showToast("Product updated successfully");
     }
+    return result;
   };
 
   const handleDelete = async () => {
@@ -120,26 +125,30 @@ const ProductsContainer = ({ showTabs = false }) => {
       )}
 
       {/* Content */}
-      {visibleProducts.length === 0 ? (
-        <EmptyState
-          title={showTabs ? "No Published Products" : "No Products Yet"}
-          subtitle={showTabs
-            ? "Your Published Products will appear here\nCreate your first product to publish"
-            : "You have not created any products yet\nStart by adding your first product"}
-          actionLabel={!showTabs ? "+ Add Product" : undefined}
-          onAction={!showTabs ? () => setShowAdd(true) : undefined}
-        />
-      ) : (
-        <ProductGrid
-          products={visibleProducts}
-          type={isPublished ? "published" : "unpublished"}
-          onEdit={setEditItem}
-          onDelete={setDeleteItem}
-          onToggle={toggleStatus}
-        />
-      )}
+      <div key={showTabs ? activeTab : "all-products"} className="page-fade-enter">
+        {isLoading && visibleProducts.length === 0 ? (
+          <ProductGridSkeleton />
+        ) : visibleProducts.length === 0 ? (
+          <EmptyState
+            title={showTabs ? "No Published Products" : "No Products Yet"}
+            subtitle={showTabs
+              ? "Your Published Products will appear here\nCreate your first product to publish"
+              : "You have not created any products yet\nStart by adding your first product"}
+            actionLabel={!showTabs ? "+ Add Product" : undefined}
+            onAction={!showTabs ? () => setShowAdd(true) : undefined}
+          />
+        ) : (
+          <ProductGrid
+            products={visibleProducts}
+            type={isPublished ? "published" : "unpublished"}
+            onEdit={setEditItem}
+            onDelete={setDeleteItem}
+            onToggle={toggleStatus}
+          />
+        )}
+      </div>
 
-      {isLoading && (
+      {isLoading && visibleProducts.length > 0 && (
         <p className="text-sm text-gray-500 mt-4">Loading...</p>
       )}
 

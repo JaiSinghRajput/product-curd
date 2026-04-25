@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import OTPPage from "./pages/OTPPage";
 import HomePage from "./pages/HomePage";
@@ -6,12 +12,13 @@ import ProductsPage from "./pages/ProductsPage";
 import ProfilePage from "./pages/ProfilePage";
 import { useAuth } from "./hooks/useAuth";
 
-function App() {
+const AppRoutes = () => {
   const { isAuthenticated, otpSent } = useAuth();
+  const location = useLocation();
 
   return (
-    <BrowserRouter>
-      <Routes>
+    <div key={location.pathname} className="page-fade-enter">
+      <Routes location={location}>
         <Route
           path="/"
           element={isAuthenticated ? <HomePage /> : <LoginPage />}
@@ -48,6 +55,14 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   );
 }

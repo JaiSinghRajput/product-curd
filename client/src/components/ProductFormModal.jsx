@@ -29,36 +29,79 @@ const ProductFormModal = ({
     }))
   );
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
 
   const handleChange = (key, value) => {
+    setSubmitError("");
+    if (errors[key]) {
+      setErrors((prev) => ({ ...prev, [key]: undefined }));
+    }
     setForm({ ...form, [key]: value });
   };
 
   const validate = () => {
-    let err = {};
-    if (!form.name) err.name = "Please enter product name";
+    const err = {};
+    const stock = Number(form.stock);
+    const mrp = Number(form.mrp);
+    const price = Number(form.price);
+
+    if (!form.name?.trim()) {
+      err.name = "Please enter product name";
+    }
+
+    if (!form.type) {
+      err.type = "Please select product type";
+    }
+
+    if (!form.stock && form.stock !== 0) {
+      err.stock = "Please enter quantity stock";
+    } else if (Number.isNaN(stock) || stock < 0) {
+      err.stock = "Stock must be a valid number";
+    }
+
+    if (!form.mrp && form.mrp !== 0) {
+      err.mrp = "Please enter MRP";
+    } else if (Number.isNaN(mrp) || mrp <= 0) {
+      err.mrp = "MRP must be greater than 0";
+    }
+
+    if (!form.price && form.price !== 0) {
+      err.price = "Please enter selling price";
+    } else if (Number.isNaN(price) || price <= 0) {
+      err.price = "Selling price must be greater than 0";
+    } else if (!Number.isNaN(mrp) && price > mrp) {
+      err.price = "Selling price must be less than or equal to MRP";
+    }
+
     setErrors(err);
     return Object.keys(err).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setSubmitError("");
     if (!validate()) return;
-    onSubmit({ ...form, images });
+
+    const result = await onSubmit({ ...form, images });
+    if (!result?.success) {
+      const detailErrors = result?.details || {};
+      if (Object.keys(detailErrors).length > 0) {
+        setErrors((prev) => ({ ...prev, ...detailErrors }));
+      }
+      setSubmitError(result?.error || "Unable to save product");
+    }
   };
 
   return (
     <Modal
       title={type === "add" ? "Add Product" : "Edit Product"}
       onClose={onClose}
-      footer={
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg"
-        >
-          {type === "add" ? "Create" : "Update"}
-        </button>
-      }
+      bodyScrollable={false}
+      panelClassName="w-[500px] max-w-[92vw]"
     >
+      {submitError && (
+        <p className="mb-3 text-sm text-red-600">{submitError}</p>
+      )}
+
       <FormInput
         label="Product Name"
         value={form.name}
@@ -79,6 +122,7 @@ const ProductFormModal = ({
         ]}
         value={form.type}
         onChange={(val) => handleChange("type", val)}
+        error={errors.type}
       />
 
       <FormInput
@@ -87,6 +131,7 @@ const ProductFormModal = ({
         onChange={(e) =>
           handleChange("stock", e.target.value)
         }
+        error={errors.stock}
       />
 
       <FormInput
@@ -95,6 +140,7 @@ const ProductFormModal = ({
         onChange={(e) =>
           handleChange("mrp", e.target.value)
         }
+        error={errors.mrp}
       />
 
       <FormInput
@@ -103,6 +149,7 @@ const ProductFormModal = ({
         onChange={(e) =>
           handleChange("price", e.target.value)
         }
+        error={errors.price}
       />
 
       <FormInput
@@ -126,6 +173,15 @@ const ProductFormModal = ({
           handleChange("exchange", val)
         }
       />
+
+      <div className="pt-2 flex justify-end">
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg"
+        >
+          {type === "add" ? "Create" : "Update"}
+        </button>
+      </div>
     </Modal>
   );
 };

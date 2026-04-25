@@ -78,7 +78,7 @@ export const ProductProvider = ({ children }) => {
     } catch (err) {
       const message = err.message || "Failed to create product";
       setError(message);
-      return { success: false, error: message };
+      return { success: false, error: message, details: err.details || {} };
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +107,7 @@ export const ProductProvider = ({ children }) => {
     } catch (err) {
       const message = err.message || "Failed to update product";
       setError(message);
-      return { success: false, error: message };
+      return { success: false, error: message, details: err.details || {} };
     } finally {
       setIsLoading(false);
     }
