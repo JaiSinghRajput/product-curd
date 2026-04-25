@@ -10,15 +10,17 @@ const normalizeProfileImageUrl = (profileImage) => {
     return null;
   }
 
-  const proxyPath = '/api/media/proxy?url=';
-
-  if (profileImage.includes(proxyPath)) {
-    const proxyIndex = profileImage.indexOf(proxyPath);
-    return profileImage.slice(proxyIndex);
-  }
-
-  if (profileImage.includes('res.cloudinary.com')) {
-    return `${proxyPath}${encodeURIComponent(profileImage)}`;
+  // Backward compatibility for users who still have a stored proxy URL.
+  if (profileImage.includes('/api/media/proxy?url=')) {
+    try {
+      const proxyIndex = profileImage.indexOf('/api/media/proxy?url=');
+      const proxyUrl = profileImage.slice(proxyIndex);
+      const params = new URLSearchParams(proxyUrl.split('?')[1] || '');
+      const original = params.get('url');
+      return original ? decodeURIComponent(original) : profileImage;
+    } catch (error) {
+      return profileImage;
+    }
   }
 
   return profileImage;

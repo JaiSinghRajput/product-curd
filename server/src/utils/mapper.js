@@ -1,11 +1,9 @@
-import { buildCloudinaryProxyUrl } from "./cloudinary.js";
-
 export const mapUser = (user) => ({
   id: user._id.toString(),
   name: user.name || null,
   email: user.email || null,
   phone: user.phone || null,
-  profileImage: buildCloudinaryProxyUrl(user.profileImage),
+  profileImage: user.profileImage || null,
 });
 
 export const mapProduct = (product) => ({
